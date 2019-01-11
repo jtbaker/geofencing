@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>FreightWaves GeoFencing Editor</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+  integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+  crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+    integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+    crossorigin=""></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script type="application/javascript" src='../js/node_modules/wellknown/wellknown.js'></script>
+    <style>
+        body{
+            height: 100%;
+            background-color: grey;
+        }
+        #container{
+            height: 100%;
+            width: 95%;
+            font-family: Arial;
+            font-size: 12pt;
+            margin: auto;
+            display: grid;
+            grid-template-areas: 
+                "h h"
+                "s m";
+            grid-template-columns: auto 1fr;
+            grid-template-rows: auto 1fr;
+            grid-row-gap: 20px;
+            grid-column-gap: 20px;
+            color: white;
+        }
+        #header{
+            grid-area: h;
+        }
+        #header img{
+            max-width: 300px;
+        }
+        #sidebar{
+            grid-area: s;
+        }
+        #mymap{
+            grid-area: m;
+            height: 600px;
+        }
+
+        .drawtable td, th{
+            border: 1px solid black;
+        }
+
+    </style>
+  </head>
+  <body>
+
+    <div id='container'>
+        <div id='header'>
+            <table>
+                <tbody>
+            <tr><td><img src="https://static1.squarespace.com/static/5899e78b1b10e35238fba886/t/5b900ced2b6a2829cb6681c1/1547134434414/?format=1500w"></td><td><div><h3>GeoFencing Editor</h3></div></td></tr>
+        </tbody>
+        </table>
+        </div>
+        <div id='sidebar'>Sidebar</div>
+        <div id='mymap'></div>
+    </div>
+    
+    <script type='text/javascript' src="../js/main.js"></script>
+  </body>
+</html>
