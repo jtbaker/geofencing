@@ -18,7 +18,7 @@
     <style>
         body{
             height: 100%;
-            background-color: grey;
+            background-color: black;
         }
         #container{
             height: 100%;
@@ -54,6 +54,10 @@
             border: 1px solid black;
         }
 
+        .editormenu button{
+            margin-left: 100px;
+        }
+
     </style>
   </head>
   <body>
@@ -69,7 +73,17 @@
         <div id='sidebar'>Sidebar</div>
         <div id='mymap'></div>
     </div>
-    
+    <script>
+    function doStuff(){
+        console.log('Hi!')
+    }
+    </script>
+    <button id="submitter">Do Stuff Button</button>
+    <script>
+        document.querySelector('#submitter').click(function(e){
+      console.log("One of the many Small Polygon Links was clicked")
+    });
+    </script>
     <script type='text/javascript' src="../js/main.js"></script>
   </body>
 </html>
