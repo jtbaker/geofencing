@@ -1,27 +1,46 @@
-layers = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     id: 'OSM',
     attribution: "OpenStreetmap"
+})
+
+aerial = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',{
+    attribution: "Google Aerial",id:'aerial'
 })
 m = L.map('mymap', {
     center: [40, -92],
     zoom: 10,
-    layers: [layers]
+    layers: [osm, aerial]
 })
 
-drawnItems = L.geoJson().addTo(m)
+let basemaps = {
+    "Aerial":aerial,
+    "OpenStreetMap": osm
+}
+let drawnItems = L.geoJson().addTo(m)
+
+
+let overlays = {
+    'Drawn Geometries': drawnItems
+}
+
+L.control.layers(basemaps, overlays, {
+    collapsed: false}
+).addTo(m)
+
+
 
 props = {
-    'name': {
+    'Location': {
         'type': 'text'
     },
-    'age': {
+    'Point Count': {
         'type': 'number'
     },
-    'occupation': {
+    'NameBrand': {
         'type': 'text'
     },
-    'allergies': {
-        'type': 'text'
+    'Date Entered': {
+        'type': 'date'
     }
 }
 
@@ -67,15 +86,23 @@ drawnItems.bindPopup(popup, {
     className: 'editorPopup'
 })
 
-var popform = document.getElementById('popup-form')
+let popform = document.getElementById('popup-form')
 
-drawnItems.bindTooltip(function (layer,feature) {
-    return JSON.stringify(layer.feature.properties)
-})
+// drawnItems.bindTooltip(function (layer,feature) {
+//     return JSON.stringify(layer.feature.properties)
+// })
+
+m.on('popupopen', function(layer,feature) {
+    console.log(layer, feature)
+    let popup = document.querySelector('#editorsubmit')
+    popup.addEventListener('click',function(e){
+        console.log(e.target.toGeoJSON())
+    });
+  });
 
 
 function popup(layer, feature){
-    let div = L.DomUtil.create('div')
+    let div = L.DomUtil.create('div', 'edtiormenu')
     // let inp = template(feature.properties)
     let table = L.DomUtil.create('table')
     let tbody = L.DomUtil.create('tbody')
@@ -97,16 +124,21 @@ function popup(layer, feature){
         inp.value=layer.feature.properties[e]
         inp.addEventListener('change',function(t){
             layer.feature.properties[e]=t.target.value
+            console.log(layer.toGeoJSON())
         })
         tbody.appendChild(tr)
     })
+    button = document.createElement('button')
+    button.innerText='Hello'
+    button.id="editorsubmit"
+    div.append(button)
     return div
 }
 
-var geocoder = L.Control.geocoder({
+let geocoder = L.Control.geocoder({
     defaultMarkGeocode: false
 })
 .on('markgeocode', function(e) {
     let center = e.geocode.center
-    m.flyTo(L.latLng(center.lat, center.lng),10);
+    m.flyTo(L.latLng(center.lat, center.lng),15);
 }).addTo(m);
