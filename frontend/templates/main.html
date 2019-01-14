@@ -14,11 +14,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-    <script type="application/javascript" src='../js/node_modules/wellknown/wellknown.js'></script>
+    <script type="application/javascript" src='static/node_modules/wellknown/wellknown.js'></script>
     <style>
         body{
             height: 100%;
-            background-color: black;
         }
         #container{
             height: 100%;
@@ -34,13 +33,37 @@
             grid-template-rows: auto 1fr;
             grid-row-gap: 20px;
             grid-column-gap: 20px;
-            color: white;
+            color: black;
         }
+        .uicontrol{
+            width: 130px;
+        }
+        .legend{
+            color: black;
+            border: 1px solid black;
+            padding: 2px;
+            border-radius: 2px;
+            margin: 2px auto;
+        }
+
+        #prod{
+            background-color: green;
+        }
+
+        #staged{
+            background-color: yellow;
+        }
+
         #header{
             grid-area: h;
+            background-image: linear-gradient(grey, lightgrey)
         }
         #header img{
             max-width: 300px;
+        }
+
+        #drawn{
+            background-color: red;
         }
         #sidebar{
             grid-area: s;
@@ -49,13 +72,32 @@
             grid-area: m;
             height: 600px;
         }
+        #updatecontent{
+            width: 130px;
+            border: 1px solid black;
+            border-radius: 2px;
+        }
+        #updatecontent:hover{
+            background-color: lightgrey;
+        }
+
+        #updatecontent:active{
+            background-color: white;
+            border-radius: 3px;
+        }
 
         .drawtable td, th{
             border: 1px solid black;
+            border-radius: 2px;
+            background-color: lightgrey;
         }
 
         .editormenu button{
             margin-left: 100px;
+        }
+
+        .geotooltip th{
+            text-align: left;
         }
 
     </style>
@@ -71,19 +113,8 @@
         </table>
         </div>
         <div id='sidebar'>Sidebar</div>
-        <div id='mymap'></div>
+        <div id='mapwrap'><div id='mymap'></div></div>
     </div>
-    <script>
-    function doStuff(){
-        console.log('Hi!')
-    }
-    </script>
-    <button id="submitter">Do Stuff Button</button>
-    <script>
-        document.querySelector('#submitter').click(function(e){
-      console.log("One of the many Small Polygon Links was clicked")
-    });
-    </script>
-    <script type='text/javascript' src="../js/main.js"></script>
+    <script type='text/javascript' src="static/main.js"></script>
   </body>
 </html>
