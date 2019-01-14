@@ -16,7 +16,7 @@
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <script type="application/javascript" src='static/node_modules/wellknown/wellknown.js'></script>
     <style>
-        body{
+        html, body{
             height: 100%;
         }
         #container{
@@ -37,6 +37,11 @@
         }
         .uicontrol{
             width: 130px;
+            opacity: 0.8;
+        }
+
+        .uicontrol input{
+            width: 125px;
         }
         .legend{
             color: black;
@@ -65,12 +70,13 @@
         #drawn{
             background-color: red;
         }
+
         #sidebar{
             grid-area: s;
         }
         #mymap{
             grid-area: m;
-            height: 600px;
+            height: 95%;
         }
         #updatecontent{
             width: 130px;

@@ -1,7 +1,7 @@
 import sqlalchemy as sql
 import geoalchemy2 as gsql
 from geoalchemy2 import func
-import geoalchemy
+
 import responder
 import json, simplejson
 from shapely.geometry import shape
@@ -14,6 +14,7 @@ router = responder.API(
     templates_dir="frontend/templates",
     static_dir="frontend/js",
 )
+
 
 @router.route("/")
 async def main(req, resp):
@@ -49,9 +50,9 @@ async def update_content(req, resp):
                 "type": "Feature",
                 "geometry": json.loads(item.__getitem__("geometry")),
                 "properties": {
-                    'NameBrand': item.__getitem__('NameBrand').__str__(),
-                    'Timestamp': item.__getitem__('timestamp').__str__(),
-                    'Status': item.__getitem__('Status').__str__()
+                    "NameBrand": item.__getitem__("NameBrand").__str__(),
+                    "Timestamp": item.__getitem__("timestamp").__str__(),
+                    "Status": item.__getitem__("Status").__str__(),
                 },
             }
             for item in features
@@ -61,21 +62,23 @@ async def update_content(req, resp):
     session.close()
 
 
-@router.route('/api/edits')
+@router.route("/api/edits")
 async def receive_edits(req, resp):
     print(req)
     session = Session()
     body = await req.media()
-    geojson = body.get('geojson')
-    geometry = geojson.get('geometry')
+    geojson = body.get("geojson")
+    geometry = geojson.get("geometry")
     s = shape(geometry)
     print(geometry, type(geometry))
     # print(f"""geometry::STGeomFromText('{s.wkt}', 4326), '{datetime.now().date().isoformat()}', {s.centroid().y}, {s.centroid().x})""")
     with engine.connect() as conn:
-        conn.execute(text(
-            f"""INSERT INTO Warehouse.dbo.[JASON_TESTING] (GeoPolygon, timestamp, latitude, longitude) VALUES (
+        conn.execute(
+            text(
+                f"""INSERT INTO Warehouse.dbo.[JASON_TESTING] (GeoPolygon, timestamp, latitude, longitude) VALUES (
             geometry::STGeomFromText('{s.wkt}', 4326), '{datetime.now().date().isoformat()}', {s.centroid.y}, {s.centroid.x})"""
-            ))
+            )
+        )
     session.close()
     resp.media = {"success": True}
 
@@ -87,4 +90,4 @@ async def receive_edits(req, resp):
 
 
 if __name__ == "__main__":
-    router.run()
+    router.run(address="192.168.1.55")
