@@ -42,6 +42,7 @@ class Business(Base, BaseTable):
     assigned = sql.Column('assigned', sql.Boolean)
     edited = sql.Column("Edited", sql.Boolean)
     priority = sql.Column("priority", sql.Integer)
+    editor = sql.Column("editor", sql.VARCHAR)
 
     def handle_type(self, attr):
         if hasattr(getattr(self, attr), 'hex'):

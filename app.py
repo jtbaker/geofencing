@@ -115,9 +115,8 @@ async def poster(req, resp, op):
     id = params.get("id")
     if opmapper.get(op) is not None and id is not None:
         session.query(Business).filter(Business.id == id).update(
-            {"assigned": opmapper.get(op)}
+            {"assigned": opmapper.get(op),"editor": params.get('editor') if op == 'assign' else None}
         )
-        session.commit()
         resp.media = {"success": True}
     else:
         resp.media = {"success": False}
@@ -125,4 +124,4 @@ async def poster(req, resp, op):
 
 
 if __name__ == "__main__":
-    router.run(address="192.168.1.55")
+    router.run()

@@ -52,7 +52,7 @@ let vm = new Vue({
                     })
                 fetch(`/api/assignments/assign`, {
                     method: 'POST',
-                    body: JSON.stringify({ id: id })
+                    body: JSON.stringify({ id: id, editor: vm.editorName })
                 }).catch(e => console.log(e))
             } else {
                 alert('Finish or discard the current assignment before continuing.')
@@ -72,7 +72,7 @@ let vm = new Vue({
     }
 })
 
-vm.editorName=prompt('Enter your editor name: ')
+
 
 osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     id: 'OSM',
@@ -333,4 +333,4 @@ coordinateinput.addEventListener('change', function (e) {
     }
 })
 
-
+vm.editorName=prompt('Enter your editor name: ').replace(/\s|;|/g,'')
