@@ -21,7 +21,8 @@ let vm = new Vue({
     delimiters: ["{*", "*}"],
     data: {
         work: [{ id: null, address: null }],
-        currentAssignment: Object.keys(baseProps).reduce((a, i) => Object.assign({ [i]: null }, a), {})
+        currentAssignment: Object.keys(baseProps).reduce((a, i) => Object.assign({ [i]: null }, a), {}),
+        editorName: null
     },
     created: function () {
         this.fetchWork();
@@ -70,6 +71,8 @@ let vm = new Vue({
         clearInterval(this.timer)
     }
 })
+
+vm.editorName=prompt('Enter your editor name: ')
 
 osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     id: 'OSM',
