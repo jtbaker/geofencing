@@ -1,26 +1,25 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8">
     <title>FreightWaves GeoFencing Editor</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
-  integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-  crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
-    integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
-    crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+        crossorigin=""></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <script type="application/javascript" src='static/node_modules/wellknown/wellknown.js'></script>
     <style>
-        body{
+        html, body{
             height: 100%;
         }
         #container{
-            height: 100%;
+            height: 95%;
             width: 95%;
             font-family: Arial;
             font-size: 12pt;
@@ -29,7 +28,7 @@
             grid-template-areas: 
                 "h h"
                 "s m";
-            grid-template-columns: auto 1fr;
+            grid-template-columns: .25fr 1fr;
             grid-template-rows: auto 1fr;
             grid-row-gap: 20px;
             grid-column-gap: 20px;
@@ -37,6 +36,11 @@
         }
         .uicontrol{
             width: 130px;
+            opacity: 0.8;
+        }
+
+        .uicontrol input{
+            width: 125px;
         }
         .legend{
             color: black;
@@ -65,12 +69,27 @@
         #drawn{
             background-color: red;
         }
+
         #sidebar{
             grid-area: s;
+            max-height: 600px;
         }
+
+        #ondeck{
+            max-height: 600px;
+            overflow-y: scroll;
+        }
+
         #mymap{
             grid-area: m;
-            height: 600px;
+            height: 95%;
+        }
+
+        #currentassignment{
+            background-color: red;
+            border: 1px solid black;
+            width: 350px;
+            height: 120px;
         }
         #updatecontent{
             width: 130px;
@@ -79,6 +98,25 @@
         }
         #updatecontent:hover{
             background-color: lightgrey;
+        }
+
+        .workentries, .worktable{
+            padding: 5px;
+            border: 1px solid black;
+            border-radius: 2px;
+            font-size: 12px;
+            font-family: Helvetica;
+            min-width: 200px;
+            max-width: 350px;
+            margin: auto;
+        }
+
+        .workentries:active{
+            background-color: grey;
+        }
+
+        .workentries:hover{
+            background-color: lightgoldenrodyellow;
         }
 
         #updatecontent:active{
@@ -100,21 +138,85 @@
             text-align: left;
         }
 
+        #dropCurrentEdit{
+            width: 100px;
+            margin: auto;
+            text-align: center;
+        }
+
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
 
     <div id='container'>
         <div id='header'>
             <table>
                 <tbody>
-            <tr><td><img src="https://static1.squarespace.com/static/5899e78b1b10e35238fba886/t/5b900ced2b6a2829cb6681c1/1547134434414/?format=1500w"></td><td><div><h3>GeoFencing Editor</h3></div></td></tr>
-        </tbody>
-        </table>
+                    <tr>
+                        <td><img src="https://static1.squarespace.com/static/5899e78b1b10e35238fba886/t/5b900ced2b6a2829cb6681c1/1547134434414/?format=1500w"></td>
+                        <td>
+                            <div>
+                                <h3>GeoFencing Editor</h3>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div id='sidebar'>Sidebar</div>
-        <div id='mapwrap'><div id='mymap'></div></div>
+        <div id='sidebar'>
+            <div id="currentassignment">
+                <table class="worktable">
+                    <thead>
+                        <tr>
+                            <th colspan="3">Current Assignment</th>
+                        </tr>
+                        <tr>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template v-if="currentAssignment.id!=null">
+                            <tr>
+                                <th>{* currentAssignment.NameBrand *}</th>
+                                <td>{* currentAssignment.Address *}</td>
+                                <td>{* currentAssignment.priority *}</td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+
+                <div id="dropCurrentEdit">
+                    <button v-if="currentAssignment.id!=null" @click="dropCurrentEdit">Discard</button>
+                </div>
+            </div>
+            <div id="ondeck">
+            <table class="worktable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in work" @click="assignGeocode(item.id, item.address, item.name, item.priority)"
+                        class="workentries" v-bind:id="item.id">
+                        <th>{* item.name *}</th>
+                        <td>{* item.address *}</td>
+                        <td>{* item.priority *}</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <div id='mapwrap'>
+            <div id='mymap'></div>
+        </div>
     </div>
     <script type='text/javascript' src="static/main.js"></script>
-  </body>
+</body>
+
 </html>
