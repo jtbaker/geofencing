@@ -14,12 +14,14 @@ router = responder.API(
     static_dir="frontend/js",
 )
 
-
+# Render the main template to the client on page load.
 @router.route("/")
 async def main(req, resp):
     resp.content = router.template("main.html")
 
 
+# Take requests from the user with a polygon bounding box, and return all results from
+# Location and LocationEdits that intesect the polygon, in a GeoJson FeatureCollection.
 @router.route("/api/stagedpolys")
 async def update_content(req, resp):
     session = Session()
@@ -27,7 +29,8 @@ async def update_content(req, resp):
     poly_bound = body.get("polybound")
     features = session.execute(
         f"""
-        SELECT LocationID, NameBrand, StoreID, Warehouse.dbo.geography2json(ShapeGeo) as geometry, timestamp, Address, 'Production' as Status FROM Warehouse.dbo.Location
+        SELECT LocationID, NameBrand, StoreID, Warehouse.dbo.geography2json(ShapeGeo) as geometry, timestamp, Address, 'Production' as Status
+        FROM Warehouse.dbo.Location
         WHERE ShapeGeo.STGeometryType()='POLYGON'
         AND ShapeGeo.STIntersects(geography::STGeomFromText('{poly_bound}',4326))=1
         UNION
@@ -56,6 +59,7 @@ async def update_content(req, resp):
     session.close()
 
 
+# Handle incoming edits from the client. Writes to both LocationEdits and Business tables
 @router.route("/api/edits")
 async def receive_edits(req, resp):
     session = Session()
@@ -91,19 +95,21 @@ async def receive_edits(req, resp):
     session.close()
 
 
+# Handle an incoming request to get the top priority geofencing needs.
 @router.route("/api/workflow")
 async def call_addresses(req, resp):
     session = Session()
     resp.media = [
         item.to_json()
         for item in session.query(Business)
-        .filter(Business.assigned == False)
+        .filter(Business.assigned == False, Business.edited == False)
         .order_by(Business.priority.desc())
         .limit(50)
     ]
     session.close()
 
 
+# Endpoint to handle task assignment.
 @router.route("/api/assignments/{op}")
 async def poster(req, resp, op):
     opmapper = {"assign": True, "drop": False}

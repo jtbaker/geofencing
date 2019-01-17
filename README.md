@@ -11,7 +11,7 @@ To run, clone or download this repository, navigate into the folder, and run:
 
 `pip install -r requirements.txt`
 
-To run the server on something other than `localhost` add a keywod argument `router.run()` like `address=0.0.0.0` in the main block of `init.py`.
+To run the server on something other than `localhost` add a keywod argument `router.run()` like `address="0.0.0.0"` in the main block of `init.py`.
 
 Then:
 
