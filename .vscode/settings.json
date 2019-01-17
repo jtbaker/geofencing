@@ -1,5 +1,0 @@
-{
-    "python.formatting.provider": "black",
-    "python.pythonPath": "/Users/jasonbaker/anaconda3/bin/python",
-    "git.ignoreLimitWarning": true
-}
