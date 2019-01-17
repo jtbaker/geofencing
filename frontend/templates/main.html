@@ -14,14 +14,16 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <script type="application/javascript" src='static/node_modules/wellknown/wellknown.js'></script>
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <style>
         html, body{
             height: 100%;
+            font-family: 'Raleway', sans-serif;
         }
         #container{
             height: 95%;
             width: 95%;
-            font-family: Arial;
+            font-family: 'Raleway', sans-serif;
             font-size: 12pt;
             margin: auto;
             display: grid;
@@ -50,6 +52,11 @@
             margin: 2px auto;
         }
 
+        * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        }
+
         #prod{
             background-color: green;
         }
@@ -60,6 +67,9 @@
 
         #header{
             grid-area: h;
+            margin: auto;
+            width: 100%;
+            text-align: center;
             background-image: linear-gradient(grey, lightgrey)
         }
         #header img{
@@ -72,25 +82,31 @@
 
         #sidebar{
             grid-area: s;
-            max-height: 600px;
+            display: table;
+            max-height: 90%;
+            height: 550px;
         }
 
         #ondeck{
-            max-height: 600px;
-            overflow-y: scroll;
+            overflow: scroll;
+            height: 550px;
         }
 
         #mymap{
             grid-area: m;
-            height: 95%;
+            height: 700px;
         }
 
         #currentassignment{
             background-color: red;
             border: 1px solid black;
-            width: 350px;
-            height: 120px;
+            height: 150px;
         }
+
+        #currentassignment tr{
+            width: 100%;
+        }
+
         #updatecontent{
             width: 130px;
             border: 1px solid black;
@@ -105,7 +121,7 @@
             border: 1px solid black;
             border-radius: 2px;
             font-size: 12px;
-            font-family: Helvetica;
+            font-family: 'Raleway', sans-serif;
             min-width: 200px;
             max-width: 350px;
             margin: auto;
@@ -140,7 +156,7 @@
 
         #dropCurrentEdit{
             width: 100%;
-            margin: 30%;
+            margin: 20%;
             text-align: center;
             font-size: 12px;
         }
@@ -164,6 +180,7 @@
                     </tr>
                 </tbody>
             </table>
+            <hr>
         </div>
         <div id='sidebar'>
             <div id="currentassignment">

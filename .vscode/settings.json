@@ -1,5 +1,5 @@
 {
     "python.formatting.provider": "black",
-    "python.pythonPath": "C:\\Users\\Jason Baker\\Miniconda3\\python.exe",
+    "python.pythonPath": "/Users/jasonbaker/anaconda3/bin/python",
     "git.ignoreLimitWarning": true
 }

@@ -81,7 +81,6 @@ async def receive_edits(req, resp):
             '{datetime.now().date().isoformat()}',
             geography::STGeomFromText('{s.wkt}', 4326) 
         )
-    COMMIT
     END
     """
     # print(exec_str)
