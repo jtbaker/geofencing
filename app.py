@@ -11,7 +11,7 @@ from datetime import datetime
 router = responder.API(
     title="GeoFencing Editor",
     templates_dir="frontend/templates",
-    static_dir="frontend/js",
+    static_dir="frontend/js"
 )
 
 
@@ -46,7 +46,7 @@ async def update_content(req, resp):
                     "NameBrand": item.__getitem__("NameBrand").__str__(),
                     "Timestamp": item.__getitem__("timestamp").__str__(),
                     "Status": item.__getitem__("Status").__str__(),
-                    "Address": item.__getitem__("Address").__str__()
+                    "Address": item.__getitem__("Address").__str__(),
                 },
             }
             for item in features
@@ -61,7 +61,7 @@ async def receive_edits(req, resp):
     session = Session()
     body = await req.media()
     geojson = body.get("geojson")
-    props = geojson.get('properties')
+    props = geojson.get("properties")
     print(props)
     geometry = geojson.get("geometry")
     s = shape(geometry)
@@ -81,12 +81,13 @@ async def receive_edits(req, resp):
             '{datetime.now().date().isoformat()}',
             geography::STGeomFromText('{s.wkt}', 4326) 
         )
-    COMMIT
     END
     """
     # print(exec_str)
     session.execute(text(exec_str))
-    session.query(Business).filter(Business.id==props.get('id')).update({'edited': True})
+    session.query(Business).filter(Business.id == props.get("id")).update(
+        {"edited": True}
+    )
     session.commit()
     resp.media = {"success": True}
     session.close()
@@ -95,9 +96,6 @@ async def receive_edits(req, resp):
 @router.route("/api/workflow")
 async def call_addresses(req, resp):
     session = Session()
-    if req.method == "POST":
-        media = await req.media()
-        print(media)
     resp.media = [
         item.to_json()
         for item in session.query(Business)
@@ -114,10 +112,10 @@ async def poster(req, resp, op):
     session = Session()
     params = await req.media()
     id = params.get("id")
-    print(id)
     if opmapper.get(op) is not None and id is not None:
-        session.query(Business).filter(Business.id == id).update({"assigned": opmapper.get(op)})
-        session.commit()
+        session.query(Business).filter(Business.id == id).update(
+            {"assigned": opmapper.get(op),"editor": params.get('editor') if op == 'assign' else None}
+        )
         resp.media = {"success": True}
     else:
         resp.media = {"success": False}
