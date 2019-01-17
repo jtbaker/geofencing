@@ -11,7 +11,7 @@ from datetime import datetime
 router = responder.API(
     title="GeoFencing Editor",
     templates_dir="frontend/templates",
-    static_dir="frontend/js"
+    static_dir="frontend/js",
 )
 
 
@@ -62,7 +62,6 @@ async def receive_edits(req, resp):
     body = await req.media()
     geojson = body.get("geojson")
     props = geojson.get("properties")
-    print(props)
     geometry = geojson.get("geometry")
     s = shape(geometry)
     exec_str = f"""
@@ -83,7 +82,6 @@ async def receive_edits(req, resp):
         )
     END
     """
-    # print(exec_str)
     session.execute(text(exec_str))
     session.query(Business).filter(Business.id == props.get("id")).update(
         {"edited": True}
@@ -114,7 +112,10 @@ async def poster(req, resp, op):
     id = params.get("id")
     if opmapper.get(op) is not None and id is not None:
         session.query(Business).filter(Business.id == id).update(
-            {"assigned": opmapper.get(op),"editor": params.get('editor') if op == 'assign' else None}
+            {
+                "assigned": opmapper.get(op),
+                "editor": params.get("editor") if op == "assign" else None,
+            }
         )
         resp.media = {"success": True}
     else:
