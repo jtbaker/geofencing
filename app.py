@@ -121,7 +121,3 @@ async def poster(req, resp, op):
     else:
         resp.media = {"success": False}
     session.close()
-
-
-if __name__ == "__main__":
-    router.run()
