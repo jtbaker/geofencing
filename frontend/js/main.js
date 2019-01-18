@@ -20,8 +20,13 @@ let vm = new Vue({
     el: "#container",
     delimiters: ["{*", "*}"],
     data: {
-        work: [{ id: null, address: null }],
-        currentAssignment: Object.keys(baseProps).reduce((a, i) => Object.assign({ [i]: null }, a), {}),
+        work: [{
+            id: null,
+            address: null
+        }],
+        currentAssignment: Object.keys(baseProps).reduce((a, i) => Object.assign({
+            [i]: null
+        }, a), {}),
         editorName: null
     },
     created: function () {
@@ -35,11 +40,17 @@ let vm = new Vue({
                 .catch(e => console.log(e))
             this.work = await caller
         },
-        cancelAutoUpdate: function () { clearInterval(this.timer) },
+        cancelAutoUpdate: function () {
+            clearInterval(this.timer)
+        },
         assignGeocode: function (id, Address, Name, priority) {
-            console.log(id, Address, Name, priority)
             if (this.currentAssignment.id === null) {
-                this.currentAssignment = { id: id, Address: Address, NameBrand: Name, priority: priority }
+                this.currentAssignment = {
+                    id: id,
+                    Address: Address,
+                    NameBrand: Name,
+                    priority: priority
+                }
                 this.work = this.work.filter(i => i.id != this.currentAssignment.id)
                 fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(Address)}&limit=5&format=json&addressdetails=1`)
                     .then(r => r.json())
@@ -52,27 +63,34 @@ let vm = new Vue({
                     })
                 fetch(`/api/assignments/assign`, {
                     method: 'POST',
-                    body: JSON.stringify({ id: id, editor: vm.editorName })
+                    body: JSON.stringify({
+                        id: id,
+                        editor: vm.editorName
+                    })
                 }).catch(e => console.log(e))
             } else {
                 alert('Finish or discard the current assignment before continuing.')
             }
         },
         dropCurrentEdit: function () {
-            console.log(this.currentAssignment.id)
             fetch(`/api/assignments/drop`, {
                 method: 'POST',
-                body: JSON.stringify({ id: this.currentAssignment.id })
+                body: JSON.stringify({
+                    id: this.currentAssignment.id
+                })
             }).catch(e => console.log(e))
-            this.currentAssignment = { id: null, Address: null, NameBrand: null, priority: null }
+            this.currentAssignment = {
+                id: null,
+                Address: null,
+                NameBrand: null,
+                priority: null
+            }
         }
     },
     beforeDestroy() {
         clearInterval(this.timer)
     }
 })
-
-
 
 osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     id: 'OSM',
@@ -97,42 +115,25 @@ let basemaps = {
 
 drawnItems = L.geoJson().addTo(m)
 
-// staged = L.geoJson(null, {
-//         style: function (feature) {
-//             return {
-//                 fillColor: 'red',
-//                 color: 'black',
-//                 dashArray: "30 10"
-//             }
-//         }
-//     })
-//     .bindTooltip(function (layer) {
-//         let props = layer.feature.properties
-//         return `<table><tbody>${Object.keys(props).map(k=>`<tr><th>${k}</th><td>${props[k]}</td></tr>`
-//     ).join('')}</tbody></table>`
-//     }, {
-//         sticky: true
-//     })
-//     .addTo(m)
-
 production = L.geoJson(null, {
-    style: function (feature) {
-        return {
-            fillColor: feature.properties.Status == 'Production' ? 'green' : 'yellow',
-            color: 'black',
-            fillOpacity: 0.6,
-            weight: 2,
-            dashArray: "10 5"
+        style: function (feature) {
+            return {
+                fillColor: feature.properties.Status == 'Production' ? 'green' : 'yellow',
+                color: 'black',
+                fillOpacity: 0.6,
+                weight: 2,
+                dashArray: "10 5"
+            }
         }
-    }
-})
+    })
     .bindTooltip(function (layer) {
         let props = layer.feature.properties
         return `<table><tbody>${Object.keys(props).map(k => `<tr><th>${k}</th><td>${props[k]}</td></tr>`
         ).join('')}</tbody></table>`
     }, {
-            sticky: true, className: 'geotooltip'
-        })
+        sticky: true,
+        className: 'geotooltip'
+    })
     .addTo(m)
 
 let overlays = {
@@ -178,7 +179,6 @@ m.on('draw:created', function (event) {
     let layer = event.layer;
     let feature = layer.feature = layer.feature || {}
     feature.type = 'Feature'
-    console.log(layer)
     feature.properties = {}
     Object.keys(baseProps).forEach(v => {
         feature.properties[v] = null
@@ -195,11 +195,11 @@ let response = null;
 
 function updateProdContent() {
     fetch('api/stagedpolys', {
-        method: 'POST',
-        body: JSON.stringify({
-            'polybound': buildPolyFromBounds(m.getBounds())
+            method: 'POST',
+            body: JSON.stringify({
+                'polybound': buildPolyFromBounds(m.getBounds())
+            })
         })
-    })
         .then(r => r.json())
         .catch(e => console.log(e))
         .then(r => {
@@ -224,13 +224,15 @@ m.on('popupopen', function (layer, feature) {
         m.closePopup()
         fetch('api/edits', {
             'method': 'POST',
-            'body': JSON.stringify({ 'geojson': activeGeoJSON })
+            'body': JSON.stringify({
+                'geojson': activeGeoJSON
+            })
         })
         setTimeout(function () {
             drawnItems.clearLayers()
             updateProdContent()
         }, 700)
-        Object.keys(baseProps).forEach(k=>{
+        Object.keys(baseProps).forEach(k => {
             vm.$set(vm.currentAssignment, k, null)
         })
     });
@@ -252,7 +254,6 @@ function popup(layer, feature) {
         let label = L.DomUtil.create('label')
         let inp = L.DomUtil.create('input')
         inp.type = baseProps[e].type
-        console.log(e)
         inp.defaultValue = vm.currentAssignment[e]
         inp.value = vm.currentAssignment[e]
         th.appendChild(label)
@@ -278,7 +279,9 @@ function popup(layer, feature) {
 }
 
 
-let uiController = L.control({ collapsed: false })
+let uiController = L.control({
+    collapsed: false
+})
 
 uiController.onAdd = function (m) {
     this._div = L.DomUtil.create('div', 'uicontrol')
@@ -292,14 +295,17 @@ uiController.update = function (props) {
     button.innerText = 'Update Map Content'
     this._div.appendChild(button)
     let prod = L.DomUtil.create('div', 'legend')
-    prod.id = 'prod'; prod.innerText = 'Production'
+    prod.id = 'prod';
+    prod.innerText = 'Production'
     let staged = L.DomUtil.create('div', 'legend')
-    staged.id = 'staged'; staged.innerText = 'Staged'
+    staged.id = 'staged';
+    staged.innerText = 'Staged'
     this._div.appendChild(prod)
     this._div.appendChild(staged)
     let coordinput = L.DomUtil.create('input')
     coordinput.id = 'coordinput';
-    coordinput.type = 'text'; coordinput.placeholder = 'Input Coordinates';
+    coordinput.type = 'text';
+    coordinput.placeholder = 'Input Coordinates';
     this._div.appendChild(coordinput)
 }
 
@@ -308,8 +314,8 @@ uiController.update = function (props) {
 uiController.addTo(m)
 
 let geocoder = L.Control.geocoder({
-    defaultMarkGeocode: false
-})
+        defaultMarkGeocode: false
+    })
     .on('markgeocode', function (e) {
         let center = e.geocode.center
         m.flyTo(L.latLng(center.lat, center.lng), 15);
@@ -327,10 +333,9 @@ coordinateinput.addEventListener('change', function (e) {
     try {
         coords = e.target.value.split(',').map(i => Number(i.trim()))
         m.flyTo(coords, 15)
-    }
-    catch (error) {
+    } catch (error) {
         console.log("Invalid Coordinate input")
     }
 })
 
-vm.editorName=prompt('Enter your editor name: ').replace(/\s|;|/g,'')
+vm.editorName = prompt('Enter your editor name: ').replace(/\s|;|/g, '')
