@@ -1,3 +1,5 @@
+
+
 baseProps = {
     'id': {
         'type': 'text'
@@ -37,7 +39,6 @@ let vm = new Vue({
         },
         cancelAutoUpdate: function () { clearInterval(this.timer) },
         assignGeocode: function (id, Address, Name, priority) {
-            console.log(id, Address, Name, priority)
             if (this.currentAssignment.id === null) {
                 this.currentAssignment = { id: id, Address: Address, NameBrand: Name, priority: priority }
                 this.work = this.work.filter(i => i.id != this.currentAssignment.id)
@@ -59,7 +60,6 @@ let vm = new Vue({
             }
         },
         dropCurrentEdit: function () {
-            console.log(this.currentAssignment.id)
             fetch(`/api/assignments/drop`, {
                 method: 'POST',
                 body: JSON.stringify({ id: this.currentAssignment.id })
@@ -97,23 +97,6 @@ let basemaps = {
 
 drawnItems = L.geoJson().addTo(m)
 
-// staged = L.geoJson(null, {
-//         style: function (feature) {
-//             return {
-//                 fillColor: 'red',
-//                 color: 'black',
-//                 dashArray: "30 10"
-//             }
-//         }
-//     })
-//     .bindTooltip(function (layer) {
-//         let props = layer.feature.properties
-//         return `<table><tbody>${Object.keys(props).map(k=>`<tr><th>${k}</th><td>${props[k]}</td></tr>`
-//     ).join('')}</tbody></table>`
-//     }, {
-//         sticky: true
-//     })
-//     .addTo(m)
 
 production = L.geoJson(null, {
     style: function (feature) {
@@ -178,7 +161,6 @@ m.on('draw:created', function (event) {
     let layer = event.layer;
     let feature = layer.feature = layer.feature || {}
     feature.type = 'Feature'
-    console.log(layer)
     feature.properties = {}
     Object.keys(baseProps).forEach(v => {
         feature.properties[v] = null
@@ -186,11 +168,7 @@ m.on('draw:created', function (event) {
     drawnItems.addLayer(layer)
 })
 
-drawnItems.bindPopup(popup, {
-    className: 'editorPopup'
-})
 
-let response = null;
 
 
 function updateProdContent() {
@@ -230,7 +208,7 @@ m.on('popupopen', function (layer, feature) {
             drawnItems.clearLayers()
             updateProdContent()
         }, 700)
-        Object.keys(baseProps).forEach(k=>{
+        Object.keys(baseProps).forEach(k => {
             vm.$set(vm.currentAssignment, k, null)
         })
     });
@@ -252,7 +230,6 @@ function popup(layer, feature) {
         let label = L.DomUtil.create('label')
         let inp = L.DomUtil.create('input')
         inp.type = baseProps[e].type
-        console.log(e)
         inp.defaultValue = vm.currentAssignment[e]
         inp.value = vm.currentAssignment[e]
         th.appendChild(label)
@@ -276,6 +253,10 @@ function popup(layer, feature) {
     div.append(button)
     return div
 }
+
+drawnItems.bindPopup(popup, {
+    className: 'editorPopup'
+})
 
 
 let uiController = L.control({ collapsed: false })
@@ -329,8 +310,8 @@ coordinateinput.addEventListener('change', function (e) {
         m.flyTo(coords, 15)
     }
     catch (error) {
-        console.log("Invalid Coordinate input")
+        alert("Invalid Coordinate input")
     }
 })
 
-vm.editorName=prompt('Enter your editor name: ').replace(/\s|;|/g,'')
+vm.editorName = prompt('Enter your editor name: ').replace(/\s|;|/g, '')
