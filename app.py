@@ -158,6 +158,3 @@ def return_pings(req, resp):
     ).all()
     resp.media = [item._asdict() for item in res]
     session.close()
-
-
-tester = "http://192.168.1.55:5042/api/pings?minlat=30.0&maxlat=30.05&minlong=-97.5&maxlong=-97.6"
