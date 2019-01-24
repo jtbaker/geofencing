@@ -10,12 +10,19 @@ user = os.environ.get("fwdbuser")
 password = os.environ.get("fwdbpass")
 port = os.environ.get("fwdbport")
 
-conn_str = f"mssql+pymssql://{user}:{password}@{host}:{port}/Warehouse"
-engine = sql.create_engine(conn_str)
+warehouse_conn_str = f"mssql+pymssql://{user}:{password}@{host}:{port}/Warehouse"
+warehouse_engine = sql.create_engine(warehouse_conn_str)
 
-Session = sessionmaker(bind=engine, autoflush=True)
+staging_conn_str = f"mssql+pymssql://{user}:{password}@{host}:{port}/Staging"
+staging_engine = sql.create_engine(staging_conn_str)
 
-Base = declarative_base(bind=engine)
+Session = sessionmaker(bind=warehouse_engine, autoflush=True)
+
+StagingSession = sessionmaker(bind=staging_engine, autoflush=True)
+
+WarehouseBase = declarative_base(bind=warehouse_engine)
+
+StagingBase = declarative_base(bind=staging_engine)
 
 
 class BaseTable(object):
@@ -25,7 +32,7 @@ class BaseTable(object):
         return f"<ID: {self.id}>"
 
 
-class Business(Base, BaseTable):
+class Business(WarehouseBase, BaseTable):
     __tablename__ = "Google_Businesses"
     id = sql.Column("id", sqlalchemy_utils.UUIDType(binary=True), primary_key=True)
     address = sql.Column("formatted_address", sql.VARCHAR)
@@ -46,3 +53,10 @@ class Business(Base, BaseTable):
             name: self.handle_type(name)
             for name in ["id", "address", "name", "edited", "priority", "assigned"]
         }
+
+class FleetComplete(StagingBase):
+    __tablename__ = 'FleetComplete'
+    id = sql.Column('recordID', sql.Integer, primary_key=True)
+    lat = sql.Column('Lat', sql.Float)
+    long = sql.Column('Long', sql.Float)
+    status = sql.Column('DutyStatus', sql.VARCHAR)
