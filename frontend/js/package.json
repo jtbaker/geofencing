@@ -12,6 +12,7 @@
   "dependencies": {
     "leaflet": "^1.4.0",
     "leaflet-draw": "^1.0.4",
+    "leaflet-heatmap": "^1.0.0",
     "terraformer": "^1.0.9",
     "terraformer-wkt-parser": "^1.2.0",
     "vue": "^2.5.21",

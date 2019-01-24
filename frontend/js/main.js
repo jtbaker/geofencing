@@ -18,6 +18,7 @@ baseProps = {
     }
 }
 
+
 let vm = new Vue({
     el: "#container",
     delimiters: ["{*", "*}"],
@@ -90,6 +91,22 @@ m = L.map('mymap', {
     layers: [osm, aerial]
 })
 
+
+let cfg = {
+    radius: .0005,
+    blur: 0.3,
+    minOpacity: .01,
+    maxOpacity: .8,
+    scaleRadius: true,
+    useLocalExtrema: false,
+    latField: 'lat',
+    lngField: 'long',
+    valueField: 'value',
+    gradient: {'0.6': 'yellow','0.9': 'orange', '.99': 'red'}
+}
+
+let heatmapLayer = new HeatmapOverlay(cfg).addTo(m)
+
 let basemaps = {
     "Aerial": aerial,
     "OpenStreetMap": osm
@@ -120,7 +137,8 @@ production = L.geoJson(null, {
 
 let overlays = {
     'Existing Geofences': production,
-    'Current Feature Edit': drawnItems
+    'Current Feature Edit': drawnItems,
+    'Heatmap': heatmapLayer
 }
 
 L.control.layers(basemaps, overlays, {
@@ -183,6 +201,14 @@ function updateProdContent() {
         .then(r => {
             production.clearLayers()
             production.addData(r)
+        })
+    fetch(`api/pings?minlat=${m.getBounds().getSouth()}&minlong=${m.getBounds().getWest()}&maxlat=${m.getBounds().getNorth()}&maxlong=${m.getBounds().getEast()}`)
+        .then(r => r.json())
+        .catch(e => console.log(e))
+        .then(r => {
+            let d = { "max": 15, "min":.4, "data": r.map(i=>Object.assign({"value": 0.3}, i)) }
+            console.log(d)
+            heatmapLayer.setData(d)
         })
 }
 

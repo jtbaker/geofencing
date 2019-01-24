@@ -4,7 +4,14 @@ import responder
 import json, simplejson
 from shapely.geometry import shape
 from sqlalchemy import text
-from db import Session, engine, Business
+from db import (
+    Session,
+    StagingSession,
+    Business,
+    FleetComplete,
+    warehouse_engine,
+    staging_engine,
+)
 from datetime import datetime
 
 
@@ -127,3 +134,30 @@ async def poster(req, resp, op):
     else:
         resp.media = {"success": False}
     session.close()
+
+
+def convert_to_number(val):
+    try:
+        result = float(val)
+    except:
+        result = None
+    return result
+
+@router.route("/api/pings")
+def return_pings(req, resp):
+    session = StagingSession()
+    required_bounds = ["minlat", "maxlat", "minlong", "maxlong"]
+    bbox = {key: convert_to_number(req.params.get(key)) for key in required_bounds}
+    for key in required_bounds:
+        if bbox.get(key) is None:
+            raise ValueError("Bad Input")
+    res = session.query(FleetComplete.lat, FleetComplete.long).filter(
+        FleetComplete.lat.between(bbox.get("minlat"), bbox.get("maxlat")),
+        FleetComplete.long.between(bbox.get("minlong"), bbox.get("maxlong")),
+        FleetComplete.status == 'OF'
+    ).all()
+    resp.media = [item._asdict() for item in res]
+    session.close()
+
+
+tester = "http://192.168.1.55:5042/api/pings?minlat=30.0&maxlat=30.05&minlong=-97.5&maxlong=-97.6"
