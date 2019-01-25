@@ -18,13 +18,18 @@ from datetime import datetime
 router = responder.API(
     title="GeoFencing Editor",
     templates_dir="frontend/templates",
-    static_dir="frontend/js",
+    static_dir="frontend",
 )
 
 # Render the main template to the client on page load.
 @router.route("/")
 async def main(req, resp):
     resp.content = router.template("main.html")
+
+
+@router.route("/documentation")
+async def main(req, resp):
+    resp.content = router.template("documentation.html")
 
 
 # Take requests from the user with a polygon bounding box, and return all results from
@@ -83,10 +88,11 @@ async def receive_edits(req, resp):
     SET @uuid2 = CAST(SUBSTRING(@uuid, 1, 8) + '-' + SUBSTRING(@uuid, 9, 4) + '-' + SUBSTRING(@uuid, 13, 4) + '-' +
             SUBSTRING(@uuid, 17, 4) + '-' + SUBSTRING(@uuid, 21, 12)
             AS UNIQUEIDENTIFIER);
-    INSERT INTO Warehouse.dbo.[LocationEdits] ("LocationID", "NameBrand", "Address", "GeoEditDate", "ShapeGeo") VALUES 
+    INSERT INTO Warehouse.dbo.[LocationEdits] ("LocationID", "NameBrand", "Name", "Address", "GeoEditDate", "ShapeGeo") VALUES 
         (
             @uuid2,
             '{props.get('NameBrand').replace("'","")}',
+            '{props.get('Name').replace("'","")}',
             '{props.get('Address').replace("'","")}',
             '{datetime.now().date().isoformat()}',
             geography::STGeomFromText('{s.wkt}', 4326) 
@@ -95,7 +101,7 @@ async def receive_edits(req, resp):
     """
     session.execute(text(exec_str))
     session.query(Business).filter(Business.id == props.get("id")).update(
-        {"edited": True}
+        {"edited": True, 'editor': body.get('editor')}
     )
     session.commit()
     resp.media = {"success": True}
@@ -136,25 +142,38 @@ async def poster(req, resp, op):
     session.close()
 
 
-def convert_to_number(val):
+def validate_latlng(val, key):
+    max_bounds = {"lat":{"min": -90.0, "max": 90.0}, "long":{"min":-180.0, "max":180.0}}
+    print(max_bounds[key])
     try:
         result = float(val)
+        if max_bounds[key]['min'] <= result <= max_bounds[key]['max']:
+            print("passing")
+            # print(max_bounds[key]["min"])
+            # print(max_bounds[key]['max'])
+            # print(key, val)
+            # print(result)
     except:
         result = None
     return result
 
+
 @router.route("/api/pings")
-def return_pings(req, resp):
+async def return_pings(req, resp):
     session = StagingSession()
     required_bounds = ["minlat", "maxlat", "minlong", "maxlong"]
-    bbox = {key: convert_to_number(req.params.get(key)) for key in required_bounds}
+    bbox = {key: validate_latlng(req.params.get(key), key[3:]) for key in required_bounds}
     for key in required_bounds:
         if bbox.get(key) is None:
             raise ValueError("Bad Input")
-    res = session.query(FleetComplete.lat, FleetComplete.long).filter(
-        FleetComplete.lat.between(bbox.get("minlat"), bbox.get("maxlat")),
-        FleetComplete.long.between(bbox.get("minlong"), bbox.get("maxlong")),
-        FleetComplete.status == 'OF'
-    ).all()
+    res = (
+        session.query(FleetComplete.lat, FleetComplete.long)
+        .filter(
+            FleetComplete.lat.between(bbox.get("minlat"), bbox.get("maxlat")),
+            FleetComplete.long.between(bbox.get("minlong"), bbox.get("maxlong")),
+            FleetComplete.status == "OF",
+        )
+        .all()
+    )
     resp.media = [item._asdict() for item in res]
     session.close()

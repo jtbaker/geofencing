@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>FreightWaves GeoFencing Editor</title>
+    <link rel="shortcut icon" type="image/x-icon" href="https://static1.squarespace.com/static/5899e78b1b10e35238fba886/t/5c2cd4f770a6adae0b472029/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
         crossorigin="" />
@@ -74,7 +75,7 @@
             background-image: linear-gradient(grey, lightgrey)
         }
         #header img{
-            max-width: 300px;
+            max-width: 200px;
         }
 
         #drawn{
@@ -162,6 +163,10 @@
             font-size: 12px;
         }
 
+        #documentation{
+            font-size: 12px;
+        }
+
     </style>
 </head>
 
@@ -179,6 +184,7 @@
                             </div>
                         </td>
                     </tr>
+                    <tr><td id="documentation"><a href="./documentation">Documentation</a></td></tr>
                 </tbody>
             </table>
             <hr>
@@ -236,7 +242,7 @@
             <div id='mymap'></div>
         </div>
     </div>
-    <script type='text/javascript' src="static/main.js"></script>
+    <script type='text/javascript' src="static/js/main.js"></script>
 </body>
 
 </html>

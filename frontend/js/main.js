@@ -7,6 +7,9 @@ baseProps = {
     'NameBrand': {
         'type': 'text'
     },
+    'Name': {
+        'type': 'text'
+    },
     'Address': {
         'type': 'text'
     },
@@ -207,7 +210,6 @@ function updateProdContent() {
         .catch(e => console.log(e))
         .then(r => {
             let d = { "max": 15, "min":.4, "data": r.map(i=>Object.assign({"value": 0.3}, i)) }
-            console.log(d)
             heatmapLayer.setData(d)
         })
 }
@@ -228,7 +230,7 @@ m.on('popupopen', function (layer, feature) {
         m.closePopup()
         fetch('api/edits', {
             'method': 'POST',
-            'body': JSON.stringify({ 'geojson': activeGeoJSON })
+            'body': JSON.stringify({ 'geojson': activeGeoJSON , 'editor': vm.editorName})
         })
         setTimeout(function () {
             drawnItems.clearLayers()
