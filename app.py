@@ -144,15 +144,10 @@ async def poster(req, resp, op):
 
 def validate_latlng(val, key):
     max_bounds = {"lat":{"min": -90.0, "max": 90.0}, "long":{"min":-180.0, "max":180.0}}
-    print(max_bounds[key])
     try:
         result = float(val)
-        if max_bounds[key]['min'] <= result <= max_bounds[key]['max']:
-            print("passing")
-            # print(max_bounds[key]["min"])
-            # print(max_bounds[key]['max'])
-            # print(key, val)
-            # print(result)
+        if not max_bounds[key]['min'] <= result <= max_bounds[key]['max']:
+            result = None
     except:
         result = None
     return result

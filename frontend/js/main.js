@@ -26,12 +26,15 @@ let vm = new Vue({
     el: "#container",
     delimiters: ["{*", "*}"],
     data: {
-        work: [{ id: null, address: null }],
+        work: [{ id: null, address: null, display: false}],
         currentAssignment: Object.keys(baseProps).reduce((a, i) => Object.assign({ [i]: null }, a), {}),
         editorName: null
     },
     created: function () {
         this.fetchWork();
+        this.timer = setInterval(function(){
+            console.log('t')
+        }, 20000)
         this.timer = setInterval(this.fetchWork, 20000)
     },
     methods: {
@@ -39,7 +42,15 @@ let vm = new Vue({
             let caller = fetch('api/workflow')
                 .then(r => r.json())
                 .catch(e => console.log(e))
-            this.work = await caller
+                .then(r=>{
+                    this.work = r.map(k=>Object.assign({display: false}, k))
+                })
+        },
+        switchDisplay: function(item){
+            this.work.filter(i=>i.id!=item.id).forEach(i=>{
+                i.display=false
+            })
+            item.display = item.display==true?false:true
         },
         cancelAutoUpdate: function () { clearInterval(this.timer) },
         assignGeocode: function (id, Address, Name, priority) {

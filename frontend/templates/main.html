@@ -184,7 +184,9 @@
                             </div>
                         </td>
                     </tr>
-                    <tr><td id="documentation"><a href="./documentation">Documentation</a></td></tr>
+                    <tr>
+                        <td id="documentation"><a href="./documentation">Documentation</a></td>
+                    </tr>
                 </tbody>
             </table>
             <hr>
@@ -215,27 +217,28 @@
 
                 <div v-if="currentAssignment.id!=null" style="display: inline;" id="dropCurrentEdit">
                     <button @click="dropCurrentEdit">Discard</button>
-                    <a :href="'mailto:jbaker@freightwaves.com?subject='+currentAssignment.id+'&body=Geofencing Issues with Feature ID '+currentAssignment.id+' at '+currentAssignment.Address+'%0D%0A -- %0D%0ADescription%0D%0A%0D%0A -- %0D%0A'+editorName">Submit an issue</a>
+                    <a :href="'mailto:jbaker@freightwaves.com?subject='+currentAssignment.id+'&body=Geofencing Issues with Feature ID '+currentAssignment.id+' at '+currentAssignment.Address+'%0D%0A -- %0D%0ADescription%0D%0A%0D%0A -- %0D%0A'+editorName">Submit
+                        an issue</a>
                 </div>
             </div>
             <div id="ondeck">
-            <table class="worktable">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Address</th>
-                        <th>Priority</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="item in work" @click="assignGeocode(item.id, item.address, item.name, item.priority)"
-                        class="workentries" v-bind:id="item.id">
-                        <th>{* item.name *}</th>
-                        <td>{* item.address *}</td>
-                        <td>{* item.priority *}</td>
-                    </tr>
-                </tbody>
-            </table>
+                <table class="worktable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in work" @click="switchDisplay(item)" class="workentries" v-bind:id="item.id">
+                            <th>{* item.name *}</th>
+                            <td>{* item.address *} <div v-if="item.display==true"><button @click="assignGeocode(item.id, item.address, item.name, item.priority)">Assign
+                                    to me</button></div></td>
+                            <td>{* item.priority *}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         <div id='mapwrap'>
