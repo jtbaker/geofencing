@@ -15,7 +15,7 @@ graphql-server-core==1.1.1
 h11==0.8.1
 idna==2.8
 itsdangerous==1.1.0
-Jinja2==2.10
+Jinja2==2.11.3
 MarkupSafe==1.1.0
 marshmallow==2.18.0
 mkl-fft==1.0.10
