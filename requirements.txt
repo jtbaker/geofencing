@@ -26,7 +26,7 @@ promise==2.2.1
 pymssql==2.1.4
 PyMySQL==0.9.3
 python-multipart==0.0.5
-PyYAML==4.2b1
+PyYAML==5.4
 requests==2.21.0
 requests-toolbelt==0.8.0
 responder==1.2.0
