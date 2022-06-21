@@ -20,7 +20,7 @@ MarkupSafe==1.1.0
 marshmallow==2.18.0
 mkl-fft==1.0.10
 mkl-random==1.0.2
-numpy==1.15.4
+numpy==1.22.0
 parse==1.9.0
 promise==2.2.1
 pymssql==2.1.4
